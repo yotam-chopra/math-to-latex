@@ -25,6 +25,9 @@ def segment_lines(processed_image):
     if end - start > 5 and np.mean(row_sums[start:end]) > 2000:
         lines. append((start, end))
 
+    if in_line:
+        lines.append((start, len(is_text)))
+
     merged = []
 
     for start, end in lines:
