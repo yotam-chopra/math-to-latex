@@ -1,3 +1,8 @@
-.venv/
-.idea/
 __pycache__/
+*.pyc
+checkpoints/
+data/rendered/
+data/raw/
+.vscode/
+.idea/
+.DS_Store
