@@ -1,4 +1,5 @@
 import os
+import csv
 
 import matplotlib.pyplot as plt
 
@@ -6,11 +7,13 @@ from equation_generator import EquationGenerator
 
 
 OUTPUT_DIR = "../data/rendered"
+LABELS_FILE = "../data/labels/labels.csv"
 
 
 class LatexRenderer:
     def __init__(self):
         os.makedirs(OUTPUT_DIR, exist_ok=True)
+        os.makedirs("../data/labels", exist_ok=True)
 
     def render_equation(self, equation, filename):
         fig = plt.figure(figsize=(4, 1))
@@ -40,19 +43,26 @@ class LatexRenderer:
 
 
 if __name__ == "__main__":
-    generator = EquationGenerator(max_depth=2)
+    generator = EquationGenerator(max_depth=1)
 
     renderer = LatexRenderer()
 
-    for i in range(10):
-        equation = generator.generate_equation()
+    with open(LABELS_FILE, "w", newline="") as csvfile:
+        writer = csv.writer(csvfile)
 
-        filename = f"equation_{i}.png"
+        writer.writerow(["filename", "equation"])
 
-        path = renderer.render_equation(
-            equation,
-            filename
-        )
+        for i in range(5000):
+            equation = generator.generate_equation()
 
-        print(f"Saved: {path}")
-        print(f"Equation: {equation}")
+            filename = f"equation_{i}.png"
+
+            path = renderer.render_equation(
+                equation,
+                filename
+            )
+
+            writer.writerow([filename, equation])
+
+            print(f"Saved: {path}")
+            print(f"Equation: {equation}")
