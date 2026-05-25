@@ -1,8 +1,16 @@
 __pycache__/
 *.pyc
+.venv/
 checkpoints/
+
 data/rendered/
 data/raw/
+data/test/
+
 .vscode/
+
 .idea/
 .DS_Store
+
+generation_log.txt
+training_log.txt

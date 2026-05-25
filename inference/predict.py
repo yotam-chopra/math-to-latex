@@ -1,4 +1,5 @@
 import torch
+import sys
 
 from PIL import Image
 
@@ -79,7 +80,7 @@ class Predictor:
 
 if __name__ == "__main__":
     labels = pd.read_csv(
-        "../data/labels/labels.csv"
+        "data/labels/labels.csv"
     )
 
     equations = labels["equation"].tolist()
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     ).to(DEVICE)
     model.load_state_dict(
         torch.load(
-            "../checkpoints/model.pth",
+            "checkpoints/model_epoch_50.pth",
             map_location=DEVICE
         )
     )
@@ -105,7 +106,13 @@ if __name__ == "__main__":
         tokenizer=tokenizer
     )
 
-    image_path = "../data/rendered/equation_0.png"
+    if len(sys.argv) < 2:
+        print(
+            "Usage: python inference/predict.py image.png"
+        )
+        sys.exit(1)
+
+    image_path = sys.argv[1]
 
     prediction = predictor.predict(
         image_path

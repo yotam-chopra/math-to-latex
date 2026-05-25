@@ -70,7 +70,7 @@ def train():
 
     loss_fn = SequenceLoss()
 
-    epochs = 20
+    epochs = 50
 
     for epoch in range(epochs):
         model.train()
@@ -116,7 +116,7 @@ def train():
 
         torch.save(
             model.state_dict(),
-            "../checkpoints/model.pth"
+            f"checkpoints/model_epoch_{epoch+1}.pth"
         )
 
 

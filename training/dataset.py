@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 from tokenizer.latex_tokenizer import LatexTokenizer
+from preprocessing.scanner import EquationAugmenter
 
 class LatexDataset(Dataset):
     def __init__(
@@ -18,11 +19,13 @@ class LatexDataset(Dataset):
         self.data = py.read_csv(labels_file)
 
         self.tokenizer = tokenizer
+        self.augmenter = EquationAugmenter()
         self.transform = transforms.Compose([
             transforms.Grayscale(),
             transforms.Resize(image_size),
             transforms.ToTensor()
         ])
+
 
     def __len__(self):
         return len(self.data)
@@ -37,7 +40,11 @@ class LatexDataset(Dataset):
 
         equation = row["equation"]
 
-        image = Image.open(image_path).convert("RGB")
+        augmented = self.augmenter.augment(
+            image_path
+        )
+
+        image = Image.fromarray(augmented)
         image_tensor = self.transform(image)
         token_ids = self.tokenizer.encode(equation)
         token_tensor = torch.tensor(

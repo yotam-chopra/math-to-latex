@@ -1,46 +1,89 @@
 import cv2
+
 import numpy as np
 
-def segment_lines(processed_image):
-    inverted = cv2.bitwise_not(processed_image)
-    row_sums = np.sum(inverted, axis = 1)
 
-    threshold = 1000
+class EquationSegmenter:
+    def __init__(self):
+        pass
 
-    is_text = row_sums > threshold
+    def segment(self, image_path):
+        image = cv2.imread(image_path)
 
-    lines = []
-    in_line = False
-    start = 0
+        gray = cv2.cvtColor(
+            image,
+            cv2.COLOR_BGR2GRAY
+        )
 
-    for i, value in enumerate(is_text):
-        if value and not in_line:
-            start = i
-            in_line = True
-        elif not value and in_line:
-            end = i
-            lines.append((start, end))
-            in_line = False
+        blurred = cv2.GaussianBlur(
+            gray,
+            (5, 5),
+            0
+        )
 
-    if end - start > 5 and np.mean(row_sums[start:end]) > 2000:
-        lines. append((start, end))
+        thresholded = cv2.adaptiveThreshold(
+            blurred,
+            255,
+            cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY_INV,
+            11,
+            2
+        )
 
-    if in_line:
-        lines.append((start, len(is_text)))
+        contours, _ = cv2.findContours(
+            thresholded,
+            cv2.RETR_EXTERNAL,
+            cv2.CHAIN_APPROX_SIMPLE
+        )
 
-    merged = []
+        if not contours:
+            return image
 
-    for start, end in lines:
-        if not merged:
-            merged.append([start, end])
-        else:
-            prev_start, prev_end = merged[-1]
+        largest_contour = max(
+            contours,
+            key=cv2.contourArea
+        )
 
-            if start - prev_end < 10:
-                merged[-1][1] = end
-            else:
-                merged.append([start, end])
+        x, y, w, h = cv2.boundingRect(
+            largest_contour
+        )
 
-    merged = [(s, e) for s, e in merged]
+        padding = 20
 
-    return merged
+        x = max(0, x - padding)
+
+        y = max(0, y - padding)
+
+        w = min(
+            image.shape[1] - x,
+            w + 2 * padding
+        )
+
+        h = min(
+            image.shape[0] - y,
+            h + 2 * padding
+        )
+
+        cropped = image[
+            y:y+h,
+            x:x+w
+        ]
+
+        return cropped
+
+
+if __name__ == "__main__":
+    segmenter = EquationSegmenter()
+
+    segmented = segmenter.segment(
+        "../data/rendered/equation_0.png"
+    )
+
+    cv2.imshow(
+        "Segmented Equation",
+        segmented
+    )
+
+    cv2.waitKey(0)
+
+    cv2.destroyAllWindows()

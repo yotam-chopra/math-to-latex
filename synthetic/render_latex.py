@@ -3,7 +3,7 @@ import csv
 
 import matplotlib.pyplot as plt
 
-from equation_generator import EquationGenerator
+from synthetic.equation_generator import EquationGenerator
 
 
 OUTPUT_DIR = "../data/rendered"
@@ -43,7 +43,7 @@ class LatexRenderer:
 
 
 if __name__ == "__main__":
-    generator = EquationGenerator(max_depth=1)
+    generator = EquationGenerator(max_depth=2)
 
     renderer = LatexRenderer()
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
         writer.writerow(["filename", "equation"])
 
-        for i in range(5000):
+        for i in range(50000):
             equation = generator.generate_equation()
 
             filename = f"equation_{i}.png"
