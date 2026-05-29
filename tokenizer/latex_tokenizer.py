@@ -1,4 +1,5 @@
 import re
+import json
 from collections import Counter
 
 
@@ -73,3 +74,22 @@ class LatexTokenizer:
             tokens.append(token)
 
         return ''.join(tokens)
+
+    def load_vocab(self, path):
+        with open(path, "r") as f:
+            self.token_to_id = json.load(f)
+
+        self.id_to_token = {
+            int(idx): token
+            for token, idx in self.token_to_id.items()
+        }
+
+    def save_vocab(self, path):
+        with open(path, "w") as f:
+            json.dump(
+                self.token_to_id,
+                f,
+                indent=4
+            )
+
+

@@ -6,14 +6,14 @@ import matplotlib.pyplot as plt
 from synthetic.equation_generator import EquationGenerator
 
 
-OUTPUT_DIR = "../data/rendered"
-LABELS_FILE = "../data/labels/labels.csv"
+OUTPUT_DIR = "data/rendered"
+LABELS_FILE = "data/labels/labels.csv"
 
 
 class LatexRenderer:
     def __init__(self):
         os.makedirs(OUTPUT_DIR, exist_ok=True)
-        os.makedirs("../data/labels", exist_ok=True)
+        os.makedirs("data/labels", exist_ok=True)
 
     def render_equation(self, equation, filename):
         fig = plt.figure(figsize=(4, 1))

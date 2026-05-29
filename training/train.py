@@ -44,6 +44,10 @@ def train():
 
     tokenizer.build_vocab(equations)
 
+    tokenizer.save_vocab(
+        "vocab/token_vocab.json"
+    )
+
     dataset = LatexDataset(
         image_dir="../data/rendered",
         labels_file="../data/labels/labels.csv",
