@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Math To LaTeX</title>
+</head>
+<body>
+
+<h1>Math To LaTeX</h1>
+
+<form id="uploadForm">
+    <input type="file" id="imageFile" accept="image/*">
+    <button type="submit">Convert</button>
+</form>
+
+<h2>Result</h2>
+
+<pre id="result"></pre>
+
+<script>
+document.getElementById("uploadForm")
+.addEventListener("submit", async (e) => {
+
+    e.preventDefault();
+
+    const file =
+        document.getElementById("imageFile").files[0];
+
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(
+        "/predict",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("result")
+        .textContent = data.latex;
+});
+</script>
+
+</body>
+</html>

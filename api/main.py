@@ -2,18 +2,26 @@ from fastapi import FastAPI, UploadFile, File
 
 from inference.predict import predict_image
 
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
 import tempfile
 import shutil
 
 app = FastAPI()
 
+templates = Jinja2Templates(
+    directory = "templates"
+)
 
-@app.get("/")
-def home():
-    return {
-        "status": "running",
-        "project": "Math To LaTeX"
-    }
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html"
+    )
 
 
 @app.post("/predict")
