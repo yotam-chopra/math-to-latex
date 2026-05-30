@@ -86,8 +86,9 @@ class Predictor:
         return latex
 
 
-if __name__ == "__main__":
-
+def load_predictor(
+    checkpoint_path="training/checkpoints/model_epoch_50.pth"
+):
     tokenizer = LatexTokenizer()
 
     tokenizer.load_vocab(
@@ -104,7 +105,7 @@ if __name__ == "__main__":
 
     model.load_state_dict(
         torch.load(
-            "training/checkpoints/model_epoch_50.pth",
+            checkpoint_path,
             map_location=DEVICE
         )
     )
@@ -114,6 +115,22 @@ if __name__ == "__main__":
         tokenizer=tokenizer
     )
 
+    return predictor
+
+def predict_image(
+    image_path,
+    checkpoint_path="training/checkpoints/model_epoch_50.pth"
+):
+    predictor = load_predictor(
+        checkpoint_path
+    )
+
+    return predictor.predict(
+        image_path
+    )
+
+if __name__ == "__main__":
+
     if len(sys.argv) < 2:
         print(
             "Usage: python -m inference.predict image.png"
@@ -122,7 +139,7 @@ if __name__ == "__main__":
 
     image_path = sys.argv[1]
 
-    prediction = predictor.predict(
+    prediction = predict_image(
         image_path
     )
 

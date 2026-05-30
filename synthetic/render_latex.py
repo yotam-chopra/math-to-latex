@@ -24,7 +24,11 @@ class LatexRenderer:
             "DejaVu Sans",
             "STIXGeneral"
         ]
-
+        FONTS = [
+            "DejaVu Serif",
+            "DejaVu Sans",
+            "STIXGeneral"
+        ]
         plt.rcParams["font.family"] = (
             random.choice(
                 available_fonts
@@ -36,7 +40,14 @@ class LatexRenderer:
                 random.uniform(1, 2)
             )
         )
+        background = random.uniform(
+            0.9,
+            1.0
+        )
 
+        fig.patch.set_facecolor(
+            (background, background, background)
+        )
         plt.text(
             random.uniform(0.35, 0.65),
             random.uniform(0.35, 0.65),
@@ -53,10 +64,8 @@ class LatexRenderer:
         plt.savefig(
             output_path,
             bbox_inches="tight",
-            pad_inches=random.uniform(
-                0.05,
-                0.4
-            )
+            pad_inches=random.uniform(0.05, 0.4),
+            dpi=random.randint(100, 300)
         )
 
         plt.close(fig)
@@ -74,14 +83,14 @@ if __name__ == "__main__":
 
         writer.writerow(["filename", "equation"])
 
-        for i in range(100):
+        for i in range(50000):
             equation = generator.generate_equation()
 
             filename = f"equation_{i}.png"
 
             path = renderer.render_equation(
                 equation,
-                filename
+                filename,
             )
 
             writer.writerow([filename, equation])
