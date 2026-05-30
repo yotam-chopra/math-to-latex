@@ -1,11 +1,13 @@
 __pycache__/
 *.pyc
+
 .venv/
 checkpoints/
 
 data/rendered/
 data/raw/
 data/test/
+vocab/
 
 .vscode/
 
