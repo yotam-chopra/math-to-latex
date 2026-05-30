@@ -2,46 +2,263 @@
 <html>
 <head>
     <title>Math To LaTeX</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: gray;
+            margin-bottom: 30px;
+        }
+
+        input[type=file] {
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 300px;
+            display: none;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        #loading {
+            display: none;
+            margin-top: 20px;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+        #resultBox {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 18px;
+        }
+
+        #copyBtn {
+            margin-top: 10px;
+            background: #16a34a;
+        }
+
+        #copyBtn:hover {
+            background: #15803d;
+        }
+
+        footer {
+            text-align: center;
+            color: gray;
+            margin-top: 40px;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Math To LaTeX</h1>
+<div class="card">
 
-<form id="uploadForm">
-    <input type="file" id="imageFile" accept="image/*">
-    <button type="submit">Convert</button>
-</form>
+    <h1>Math To LaTeX</h1>
 
-<h2>Result</h2>
+    <p class="subtitle">
+        Upload an equation image and convert it into LaTeX.
+    </p>
 
-<pre id="result"></pre>
+    <form id="uploadForm">
+
+        <input
+            type="file"
+            id="imageFile"
+            accept="image/*"
+            required
+        >
+
+        <br>
+
+        <button type="submit">
+            Convert
+        </button>
+
+    </form>
+
+    <img id="preview" alt="Preview">
+
+    <div id="loading">
+        Converting image...
+    </div>
+
+    <div id="resultBox">
+
+        <h2>LaTeX Output</h2>
+
+        <pre id="result"></pre>
+
+        <button
+            id="copyBtn"
+            type="button"
+        >
+            Copy LaTeX
+        </button>
+
+    </div>
+
+</div>
+
+<footer>
+    Built by Yotam • Math To LaTeX
+</footer>
 
 <script>
-document.getElementById("uploadForm")
-.addEventListener("submit", async (e) => {
 
-    e.preventDefault();
+const imageFile =
+    document.getElementById("imageFile");
 
-    const file =
-        document.getElementById("imageFile").files[0];
+const preview =
+    document.getElementById("preview");
 
-    const formData = new FormData();
+imageFile.addEventListener(
+    "change",
+    () => {
 
-    formData.append("image", file);
+        const file =
+            imageFile.files[0];
 
-    const response = await fetch(
-        "/predict",
-        {
-            method: "POST",
-            body: formData
+        if (!file) return;
+
+        preview.src =
+            URL.createObjectURL(file);
+
+        preview.style.display =
+            "block";
+    }
+);
+
+document
+.getElementById("uploadForm")
+.addEventListener(
+    "submit",
+    async (e) => {
+
+        e.preventDefault();
+
+        document
+            .getElementById("loading")
+            .style.display = "block";
+
+        document
+            .getElementById("resultBox")
+            .style.display = "none";
+
+        const file =
+            imageFile.files[0];
+
+        const formData =
+            new FormData();
+
+        formData.append(
+            "image",
+            file
+        );
+
+        try {
+
+            const response =
+                await fetch(
+                    "/predict",
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            document
+                .getElementById("result")
+                .textContent =
+                data.latex;
+
+            document
+                .getElementById("resultBox")
+                .style.display = "block";
+
+        } catch (error) {
+
+            document
+                .getElementById("result")
+                .textContent =
+                "Prediction failed.";
+
+            document
+                .getElementById("resultBox")
+                .style.display = "block";
         }
-    );
 
-    const data = await response.json();
+        document
+            .getElementById("loading")
+            .style.display = "none";
+    }
+);
 
-    document.getElementById("result")
-        .textContent = data.latex;
-});
+document
+.getElementById("copyBtn")
+.addEventListener(
+    "click",
+    () => {
+
+        navigator.clipboard.writeText(
+            document
+            .getElementById("result")
+            .textContent
+        );
+
+        alert(
+            "LaTeX copied!"
+        );
+    }
+);
+
 </script>
 
 </body>
